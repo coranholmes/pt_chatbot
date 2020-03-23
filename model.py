@@ -26,6 +26,7 @@ from io import open
 import itertools
 import math
 import jieba
+import pickle
 from config import *
 
 
@@ -601,3 +602,46 @@ def generateAnswer(query, encoder, decoder, searcher, voc):
         separator = " "
         res = separator.join(output_words)
     return res
+
+
+def init():
+    with open(vocFile, 'rb') as f:
+        voc = pickle.load(f)
+    with open(pairsFile, 'rb') as f:
+        pairs = pickle.load(f)
+
+    # Load model if a loadFilename is provided
+    if loadFilename:
+        # If loading on same machine the model was trained on
+        checkpoint = torch.load(loadFilename)
+        # If loading a model trained on GPU to CPU
+        # checkpoint = torch.load(loadFilename, map_location=torch.device('cpu'))
+        encoder_sd = checkpoint['en']
+        decoder_sd = checkpoint['de']
+        embedding_sd = checkpoint['embedding']
+        voc.__dict__ = checkpoint['voc_dict']
+
+    print('Building encoder and decoder ...')
+    # Initialize word embeddings
+    embedding = nn.Embedding(voc.num_words, hidden_size)
+
+    # 载入预训练的词向量
+    if loadFilename:
+        embedding.load_state_dict(embedding_sd)
+    elif embeddingFile:
+        with open(embeddingFile, 'rb') as f:
+            emb = pickle.load(f)
+        emb = torch.from_numpy(emb)  # 不转换会报错TypeError: 'int' object is not callable
+        embedding.load_state_dict({'weight': emb})
+
+    # Initialize encoder & decoder models
+    encoder = EncoderRNN(hidden_size, embedding, encoder_n_layers, dropout)
+    decoder = LuongAttnDecoderRNN(attn_model, embedding, hidden_size, voc.num_words, decoder_n_layers, dropout)
+    if loadFilename:
+        encoder.load_state_dict(encoder_sd)
+        decoder.load_state_dict(decoder_sd)
+    # Use appropriate device
+    encoder = encoder.to(device)
+    decoder = decoder.to(device)
+    print('Models built and ready to go!')
+    return encoder, decoder, voc, pairs, embedding

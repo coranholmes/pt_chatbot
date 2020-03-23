@@ -64,47 +64,7 @@ def index():
     return render_template("index.html")
 
 
-with open(vocFile, 'rb') as f:
-    voc = pickle.load(f)
-with open(pairsFile, 'rb') as f:
-    pairs = pickle.load(f)
-
-# Load model if a loadFilename is provided
-if loadFilename:
-    # If loading on same machine the model was trained on
-    checkpoint = torch.load(loadFilename)
-    # If loading a model trained on GPU to CPU
-    # checkpoint = torch.load(loadFilename, map_location=torch.device('cpu'))
-    encoder_sd = checkpoint['en']
-    decoder_sd = checkpoint['de']
-    encoder_optimizer_sd = checkpoint['en_opt']
-    decoder_optimizer_sd = checkpoint['de_opt']
-    embedding_sd = checkpoint['embedding']
-    voc.__dict__ = checkpoint['voc_dict']
-
-print('Building encoder and decoder ...')
-# Initialize word embeddings
-embedding = nn.Embedding(voc.num_words, hidden_size)
-
-# 载入预训练的词向量
-if loadFilename:
-    embedding.load_state_dict(embedding_sd)
-elif embeddingFile:
-    with open(embeddingFile, 'rb') as f:
-        emb = pickle.load(f)
-    emb = torch.from_numpy(emb)  # 不转换会报错TypeError: 'int' object is not callable
-    embedding.load_state_dict({'weight': emb})
-
-# Initialize encoder & decoder models
-encoder = EncoderRNN(hidden_size, embedding, encoder_n_layers, dropout)
-decoder = LuongAttnDecoderRNN(attn_model, embedding, hidden_size, voc.num_words, decoder_n_layers, dropout)
-if loadFilename:
-    encoder.load_state_dict(encoder_sd)
-    decoder.load_state_dict(decoder_sd)
-# Use appropriate device
-encoder = encoder.to(device)
-decoder = decoder.to(device)
-print('Models built and ready to go!')
+encoder, decoder, voc, pairs, embedding = init()
 
 # Set dropout layers to eval mode
 encoder.eval()
@@ -118,11 +78,3 @@ init = "".join(list(jieba.cut("聊天系统初始化成功")))
 
 # 启动APP
 app.run()
-
-# while 1:
-#     # Get input sentence
-#     input_sentence = input('> ')
-#     # Check if it is quit case
-#     if input_sentence == 'q' or input_sentence == 'quit': break
-#     ans = generateAnswer(input_sentence, encoder, decoder, searcher, voc)
-#     print("学长: ", ans)

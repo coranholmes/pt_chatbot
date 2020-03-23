@@ -67,3 +67,4 @@ https://github.com/llSourcell/tensorflow_chatbot
 2. 支持对话中出现单词表中不包含的单词
 3. 支持载入预训练的词向量
 4. 支持中文会话
+5. 支持GUI
