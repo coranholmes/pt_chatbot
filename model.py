@@ -531,7 +531,7 @@ class GreedySearchDecoder(nn.Module):
         return all_tokens, all_scores
 
 
-def evaluate(encoder, decoder, searcher, voc, sentence, max_length=MAX_LENGTH):
+def evaluate(searcher, voc, sentence, max_length=MAX_LENGTH):
     ### Format input sentence as a batch
     # words -> indexes
     indexes_batch = [indexesFromSentence(voc, sentence)]
@@ -568,21 +568,21 @@ def postProcessOutput(text):
     return res
 
 
-def evaluateInput(encoder, decoder, searcher, voc):
+def evaluateInput(searcher, voc):
     input_sentence = ''
     while 1:
         # Get input sentence
         input_sentence = input('> ')
         # Check if it is quit case
         if input_sentence == 'q' or input_sentence == 'quit': break
-        res = generateAnswer(input_sentence, encoder, decoder, searcher, voc)
+        res = generateAnswer(input_sentence, searcher, voc)
         if lang == "cn":
             print('学长: ', res)
         else:
             print('Bot:', res)
 
 
-def generateAnswer(query, encoder, decoder, searcher, voc):
+def generateAnswer(query, searcher, voc):
     # Get input sentence
     input_sentence = query
     # Normalize sentence
@@ -593,7 +593,7 @@ def generateAnswer(query, encoder, decoder, searcher, voc):
             print("input length %d" % len(input_sentence))
         input_sentence = " ".join(input_sentence)
     # Evaluate sentence
-    output_words = evaluate(encoder, decoder, searcher, voc, input_sentence)
+    output_words = evaluate(searcher, voc, input_sentence)
     # Format and print response sentence
     output_words[:] = [x for x in output_words if not (x == 'EOS' or x == 'PAD')]
     if lang == "cn":

@@ -65,5 +65,5 @@ searcher = GreedySearchDecoder(encoder, decoder)
 init = "".join(list(jieba.cut("聊天系统初始化成功")))
 
 # Begin chatting (uncomment and run the following line to begin)
-evaluateInput(encoder, decoder, searcher, voc)
+evaluateInput(searcher, voc)
 

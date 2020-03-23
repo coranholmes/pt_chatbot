@@ -51,7 +51,7 @@ app = Flask(__name__, static_url_path="/static")
 def reply():
     req_msg = request.form['msg']
     print('Message received:', req_msg)
-    res_msg = generateAnswer(req_msg, encoder, decoder, searcher, voc)
+    res_msg = generateAnswer(req_msg, searcher, voc)
     print('Message sent:', res_msg)
     # 如果接受到的内容为空，则给出相应的回复
     if res_msg == '':
