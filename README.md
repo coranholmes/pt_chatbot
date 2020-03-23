@@ -1,5 +1,6 @@
 # Requirements
- - PyTorch 1.12.0
+ - PyTorch 1.2.0
+ - Jieba 0.42.1
 
 # 数据相关
 ## 训练语料
