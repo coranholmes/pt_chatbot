@@ -47,9 +47,9 @@
 
 # 训练效果
 bot的训练语料全是谈情说爱性质的，所以出现金融危机、covid-19等就会说莫名其妙的话，甚至不成句子，主要是训练语料太少的原因。  
-<img src="./imgs/效果图3.png" width=500>
+<img src="./imgs/坏结果.png" width=500>
 如果是一些恋爱用语，bot的回复就很好，当然我训练次数也较多，还额外做了后处理，可能有点过拟合。  
-<img src="./imgs/效果图3.png" width=500>
+<img src="./imgs/好结果.png" width=500>
 网页版本效果如图  
 <img src="./imgs/效果图3.png" width=300>
 
