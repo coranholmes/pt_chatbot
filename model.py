@@ -566,30 +566,38 @@ def postProcessOutput(text):
         res = res[:pos + 1]
     return res
 
+
 def evaluateInput(encoder, decoder, searcher, voc):
     input_sentence = ''
     while 1:
-        try:
-            # Get input sentence
-            input_sentence = input('> ')
-            # Check if it is quit case
-            if input_sentence == 'q' or input_sentence == 'quit': break
-            # Normalize sentence
-            input_sentence = normalizeString(input_sentence, lang)
-            if lang == "cn":  # 如果是中文则进行分词
-                input_sentence = list(jieba.cut(input_sentence))
-                if debug:
-                    print("input length %d" % len(input_sentence))
-                input_sentence = " ".join(input_sentence)
-            # Evaluate sentence
-            output_words = evaluate(encoder, decoder, searcher, voc, input_sentence)
-            # Format and print response sentence
-            output_words[:] = [x for x in output_words if not (x == 'EOS' or x == 'PAD')]
-            if lang == "cn":
-                res = postProcessOutput(output_words)
-                print('学长: ', res)
-            else:
-                separator = " "
-                print('Bot:', separator.join(output_words))
-        except KeyError:
-            print("Error: Other errors.")
+        # Get input sentence
+        input_sentence = input('> ')
+        # Check if it is quit case
+        if input_sentence == 'q' or input_sentence == 'quit': break
+        res = generateAnswer(input_sentence, encoder, decoder, searcher, voc)
+        if lang == "cn":
+            print('学长: ', res)
+        else:
+            print('Bot:', res)
+
+
+def generateAnswer(query, encoder, decoder, searcher, voc):
+    # Get input sentence
+    input_sentence = query
+    # Normalize sentence
+    input_sentence = normalizeString(input_sentence, lang)
+    if lang == "cn":  # 如果是中文则进行分词
+        input_sentence = list(jieba.cut(input_sentence))
+        if debug:
+            print("input length %d" % len(input_sentence))
+        input_sentence = " ".join(input_sentence)
+    # Evaluate sentence
+    output_words = evaluate(encoder, decoder, searcher, voc, input_sentence)
+    # Format and print response sentence
+    output_words[:] = [x for x in output_words if not (x == 'EOS' or x == 'PAD')]
+    if lang == "cn":
+        res = postProcessOutput(output_words)
+    else:
+        separator = " "
+        res = separator.join(output_words)
+    return res
