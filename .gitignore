@@ -1,0 +1,6 @@
+.idea
+__pycache__
+tensorboard
+data
+preprocess_baiqi_file.py
+config.py
