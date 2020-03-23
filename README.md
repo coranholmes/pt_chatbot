@@ -1,6 +1,7 @@
 # Requirements
  - PyTorch 1.2.0
  - Jieba 0.42.1
+ - Flask 1.1.1（如果无需网页版本则不需要）
 
 # 数据相关
 ## 训练语料
@@ -37,21 +38,29 @@
 1. 在`config.py`文件中配置相关参数
  - 设置`mode=evaluate`
  - 设置`checkpoint_iter`为上次训练的次数，并设置`loadFilename`为存档地址
-3. 运行`train.py`训练模型，可与机器人对话，输入quit结束
+2. 运行`train.py`训练模型，可与机器人对话，输入quit结束
+
+## 网页版本
+1. 在`config.py`文件中配置相关参数（同测试模型）
+2. 运行`app.py`，服务器启动后找到地址，如`http://127.0.0.1:5000/`
+3. 在浏览器中输入地址，和机器人对话
 
 # 训练效果
 bot的训练语料全是谈情说爱性质的，所以出现金融危机、covid-19等就会说莫名其妙的话，甚至不成句子，主要是训练语料太少的原因。
 ![坏结果](imgs/效果图2.png)
 如果是一些恋爱用语，bot的回复就很好，当然我训练次数也较多，还额外做了后处理，可能有点过拟合。
-![坏结果](imgs/效果图.png)
+![好结果](imgs/效果图.png)
+网页版本效果如图  
+<img src="./imgs/效果图3.png" width=500>
 
 # 未来工作
 1. 现在的生成模型似乎不会自动停止，总是倾向于生成长回答，所以做了后处理，即在句号或问号处截断生成的回答。这似乎是因为`maskNLLLoss`只计算实际句子长度的loss，之后也许会尝试一下计算完整长度的loss。
 2. 生成模型在语料较少的时候还是不太靠谱，训练次数少的话甚至不能生成符合语法结构的句子，所以想加入用embedding进行文本检索的模块。如果检索到的句子匹配度较低，才调用生成模型。
-3. 结果嵌入web，尝试用torchscript部署。
+3. 尝试用torchscript部署上线。
 
 # 参考
-http://fancyerii.github.io/2019/02/14/chatbot/
+http://fancyerii.github.io/2019/02/14/chatbot/  
+https://github.com/llSourcell/tensorflow_chatbot
 
 # 改进
 1. Fix原教程中的一些bug
