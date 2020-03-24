@@ -25,7 +25,7 @@ with open(fastTextEmb, 'rb') as f:
         vect = np.array(line[1:]).astype(np.float)
         vectors[word] = vect
 
-with open('data/voc_bq.pkl', 'rb') as f:
+with open(vocFile, 'rb') as f:
     voc = pickle.load(f)
 
 print("Finish loading fasttest embedding.")
