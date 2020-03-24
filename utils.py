@@ -16,9 +16,9 @@ from gensim.models.wrappers import FastText
 from gensim.models import KeyedVectors
 
 
-def initFastTextEmb(path='data/embedding/gensim_fasttext.mod'):
+def initFastTextEmb():
     start = time.time()
-    with open(path, 'rb') as f:  # 直接load_word2vec_format太慢了，所以读取之后保存成pickle再读
+    with open(fastTextGensim, 'rb') as f:  # 直接load_word2vec_format太慢了，所以读取之后保存成pickle再读
         model = pickle.load(f)
     end = time.time()
     print("Finish loading embedding: ", end - start)

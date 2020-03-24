@@ -12,12 +12,15 @@ import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
 
+
 def computeSimilarity(row, emb):
-    emb2 = row['emb'].reshape(1,-1)
+    emb2 = row['emb'].reshape(1, -1)
     sim = cosine_similarity(emb, emb2)
     return sim.item()
 
+
 debug = True
+init = "".join(list(jieba.cut("聊天系统初始化成功")))
 sent_emb = pd.read_pickle('data/sent_emb.pkl')
 while 1:
     # Get input sentence
@@ -30,13 +33,13 @@ while 1:
     sim = sent_emb.apply(computeSimilarity, axis=1, args=(emb,))
     sent_emb['sim'] = sim
     # print(sent_emb.nlargest(10, 'sim'))
-    res = sent_emb[sent_emb.sim >= 0.9965]
-
-    if res.empty:
-        # TODO 走生成模型
+    max_sim = sent_emb['sim'].max()
+    res = sent_emb[sent_emb['sim'] == max_sim]
+    if max_sim < 0.9965:
         print("未检索到结果！降低阈值查找中...")
-        res = sent_emb.nlargest(10, 'sim')
-    if debug:
-        print(res.loc[:,['qry','ans','sim']])
+        if debug:
+            res = sent_emb.nlargest(10, 'sim')
+            print(res.loc[:, ['qry', 'ans', 'sim']])
     res = res.sample(1).ans.values.item()  # 转换为str格式
+    res = res.replace(" ", "")
     print('学长:', res)

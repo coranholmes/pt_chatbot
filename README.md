@@ -1,7 +1,8 @@
 # Requirements
  - PyTorch 1.2.0
  - Jieba 0.42.1
- - Flask 1.1.1（如果无需网页版本则不需要）
+ - Flask 1.1.1（网页版本才需要）
+ - Gensim 3.8.0 （检索模型才需要）
 
 # 数据相关
 ## 训练语料
@@ -26,7 +27,8 @@
 推荐使用fastText使用维基百科训练的词向量，[下载地址](https://fasttext.cc/docs/en/pretrained-vectors.html)
 
 # 运行方法
-## 训练模型
+## 生成模型
+### 训练模型
 1. 运行`generate_voc_pairs.py`生成词汇表和问答pairs
 2. 运行`preprocess_emb.py`预处理预训练的词向量（如果不需要预训练词向量可跳过此步骤，`config.py`中）
 3. 在`config.py`文件中配置相关参数（参考`config_example.py`）
@@ -34,11 +36,16 @@
  - 首次训练设置`loadFilename=None`，如果是接着训练则设置`checkpoint_iter`为上次训练的次数，并设置`loadFilename`为存档地址
 4. 运行`train.py`训练模型，训练完后可与机器人对话，输入quit结束
 
-## 测试模型
+### 测试模型
 1. 在`config.py`文件中配置相关参数
  - 设置`mode=evaluate`
  - 设置`checkpoint_iter`为上次训练的次数，并设置`loadFilename`为存档地址
 2. 运行`train.py`训练模型，可与机器人对话，输入quit结束
+
+## 检索模型
+1. 将`gensim`加载`fastText`词向量后得到的模型存储在路径`fastTextGensim`下。
+2. 运行`compute_sent_emb.py`计算知识库中所有句子的句向量保存`sentEmbFile`
+3. 运行`retrieval.py`，可与机器人对话，输入quit结束
 
 ## 网页版本
 1. 在`config.py`文件中配置相关参数（同测试模型）
@@ -46,6 +53,7 @@
 3. 在浏览器中输入地址，和机器人对话
 
 # 训练效果
+## 生成模型
 bot的训练语料全是谈情说爱性质的，所以出现金融危机、covid-19等就会说莫名其妙的话，甚至不成句子，主要是训练语料太少的原因。  
 <img src="./imgs/坏结果.png" width=500>  
 如果是一些恋爱用语，bot的回复就很好，当然我训练次数也较多，还额外做了后处理，可能有点过拟合。  
@@ -54,17 +62,19 @@ bot的训练语料全是谈情说爱性质的，所以出现金融危机、covid
 <img src="./imgs/网页版.png" width=300>  
 
 # 未来工作
-1. 现在的生成模型似乎不会自动停止，总是倾向于生成长回答，所以做了后处理，即在句号或问号处截断生成的回答。这似乎是因为`maskNLLLoss`只计算实际句子长度的loss，之后也许会尝试一下计算完整长度的loss。
-2. 生成模型在语料较少的时候还是不太靠谱，训练次数少的话甚至不能生成符合语法结构的句子，所以想加入用embedding进行文本检索的模块。如果检索到的句子匹配度较低，才调用生成模型。
-3. 部署上线（么得机器哈哈哈）。
+1. 现在的生成模型似乎不会自动停止，总是倾向于生成长回答，所以做了后处理，即在句号或问号处截断生成的回答。这似乎是因为`maskNLLLoss`只计算实际句子长度的loss，之后也许会尝试一下计算完整长度的loss。  
+2. 部署上线（么得机器哈哈哈）。
+3. 增加调教功能以用于收集更多语料。
+4. 检索模型计算句子相似度有点慢，之后可能会用`Faiss`重写这部分代码。
 
 # 参考
 http://fancyerii.github.io/2019/02/14/chatbot/  
 https://github.com/llSourcell/tensorflow_chatbot
 
 # 改进
-1. Fix原教程中的一些bug
+1. 添加用来打底的检索模型
 2. 支持对话中出现单词表中不包含的单词
 3. 支持载入预训练的词向量
 4. 支持中文会话
 5. 支持GUI
+
