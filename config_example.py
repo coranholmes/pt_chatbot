@@ -12,7 +12,6 @@ import torch
 
 USE_CUDA = torch.cuda.is_available()
 device = torch.device("cuda" if USE_CUDA else "cpu")
-debug = False
 
 # Default word tokens
 PAD_token = 0  # Used for padding short sentences
@@ -51,9 +50,15 @@ loadFilename = None  # 初始训练时设置为None
 # loadFilename = os.path.join('data/save', model_name, corpus_name,
 #                             '{}-{}_{}'.format(encoder_n_layers, decoder_n_layers, hidden_size),
 #                             '{}_checkpoint.tar'.format(checkpoint_iter))
-fastTextEmb = os.path.join('data', 'wiki.zh.align.vec')  # fastText embedding 文件地址
-embeddingFile = os.path.join('data', 'embedding.pkl')  # 从fastText的embedding中过滤处理过要用的embedding文件
-vocFile = os.path.join('data', 'voc.pkl')
-pairsFile = os.path.join('data', 'pairs.pkl')
-dialogFile = os.path.join('data', 'dialogfile.txt')
-mode = "train"
+fastTextEmb = os.path.join('data/embedding/', 'wiki.zh.align.vec')  # fastText embedding 文件地址
+fastTextGensim = os.path.join('data/embedding', 'gensim_fasttext.mod')  # gensim加载fasttext后的模型
+embeddingFile = os.path.join('data', 'embedding_bq.pkl')  # 从fastText的embedding中过滤处理过要用的embedding文件
+sentEmbFile  = os.path.join('data', 'sent_emb.pkl')  # 存储计算好的句子向量文件
+vocFile = os.path.join('data', 'voc_bq.pkl')
+pairsFile = os.path.join('data', 'pairs_bq.pkl')
+dialogFile = os.path.join('data', 'baiqi.txt')
+mode = "evaluate"
+debug_gen = False  # 是否开启生成模型的debug模式
+debug_ret = False  # 是否开启检索模型的debug模式
+debug_hyb = True  # 是否开启混合模型的debug模式
+threshold_ret = 0.9965  # 检索模型相似度阈值

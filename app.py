@@ -64,7 +64,7 @@ def index():
     return render_template("index.html")
 
 
-encoder, decoder, voc, pairs, embedding = init()
+encoder, decoder, voc, pairs, embedding = initGenModel()
 
 # Set dropout layers to eval mode
 encoder.eval()

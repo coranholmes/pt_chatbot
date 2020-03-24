@@ -43,14 +43,17 @@
 2. 运行`train.py`训练模型，可与机器人对话，输入quit结束
 
 ## 检索模型
-1. 将`gensim`加载`fastText`词向量后得到的模型存储在路径`fastTextGensim`下。
+1. 将`gensim`加载`fastText`词向量后得到的模型存储在路径`fastTextGensim`下。（具体见`compute_sent_emb.py`的注释部分）
 2. 运行`compute_sent_emb.py`计算知识库中所有句子的句向量保存`sentEmbFile`
 3. 运行`retrieval.py`，可与机器人对话，输入quit结束
 
+## 混合模型
+混合模型综合了生成模型和检索模型的结果，当检索模型召回的answer与用户输入的query相似度小于阈值（由`config.py`中的`threshold_ret`定义）。前两个模型都跑通的话可以用如下方法运行混合模型：
+1. 运行`hybrid_model.py`，可与机器人对话，输入quit结束
+
 ## 网页版本
-1. 在`config.py`文件中配置相关参数（同测试模型）
-2. 运行`app.py`，服务器启动后找到地址，如`http://127.0.0.1:5000/`
-3. 在浏览器中输入地址，和机器人对话
+1. 混合模型跑通以后，运行`app.py`，服务器启动后找到地址，如`http://127.0.0.1:5000/`
+2. 在浏览器中输入地址，和机器人对话
 
 # 训练效果
 ## 生成模型
@@ -58,7 +61,9 @@ bot的训练语料全是谈情说爱性质的，所以出现金融危机、covid
 <img src="./imgs/坏结果.png" width=500>  
 如果是一些恋爱用语，bot的回复就很好，当然我训练次数也较多，还额外做了后处理，可能有点过拟合。  
 <img src="./imgs/好结果.png" width=500>  
-网页版本效果如图  
+
+## 网页版本
+网页版效果如图所示   
 <img src="./imgs/网页版.png" width=300>  
 
 # 未来工作

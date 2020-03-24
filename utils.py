@@ -7,24 +7,19 @@
 @comments: sentence embedding相关的工具方法
 """
 
-
 import time, pickle
 import pandas as pd
 import numpy as np
 from config import *
+from model import *
+from sklearn.metrics.pairwise import cosine_similarity
 from gensim.models.wrappers import FastText
 from gensim.models import KeyedVectors
 
 
-def initFastTextEmb():
-    start = time.time()
-    with open(fastTextGensim, 'rb') as f:  # 直接load_word2vec_format太慢了，所以读取之后保存成pickle再读
-        model = pickle.load(f)
-    end = time.time()
-    print("Finish loading embedding: ", end - start)
-    return model
+with open(fastTextGensim, 'rb') as f:  # 直接load_word2vec_format太慢了，所以读取之后保存成pickle再读
+    model = pickle.load(f)
 
-model = initFastTextEmb()
 
 def computeSentEmb(sent):
     words = sent.split()
@@ -35,6 +30,34 @@ def computeSentEmb(sent):
             res = res + model.wv[w]
         else:
             # print(w)
-            res = res + np.random.normal(scale=0.3, size=(hidden_size, ))
+            res = res + np.random.normal(scale=0.3, size=(hidden_size,))
     res = res / hidden_size
     return res
+
+
+def computeSimilarity(row, emb):
+    emb2 = row['emb'].reshape(1, -1)
+    sim = cosine_similarity(emb, emb2)
+    return sim.item()
+
+
+def retrieveAnswer(query, sent_emb):
+    input_sentence = normalizeString(query, lang)
+    input_sentence = " ".join(list(jieba.cut(input_sentence)))
+    emb = computeSentEmb(input_sentence)
+    emb = emb.reshape(1, -1)
+    sim = sent_emb.apply(computeSimilarity, axis=1, args=(emb,))
+    sent_emb['sim'] = sim
+    # print(sent_emb.nlargest(10, 'sim'))
+    max_sim = sent_emb['sim'].max()
+    res = sent_emb[sent_emb['sim'] == max_sim]
+    res = res.sample(1).ans.values.item()  # 转换为str格式
+    res = res.replace(" ", "")
+
+    if max_sim < threshold_ret:
+        if debug_ret:
+            print("阈值%.4f未检索到结果！搜索到的最大相似度为%f。降低阈值查找中..." % (threshold_ret, max_sim))
+            top10 = sent_emb.nlargest(10, 'sim')
+            print(top10.loc[:, ['qry', 'ans', 'sim']])
+
+    return res, max_sim

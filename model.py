@@ -550,7 +550,7 @@ def evaluate(searcher, voc, sentence, max_length=MAX_LENGTH):
 
 
 def postProcessOutput(text):
-    if debug:
+    if debug_gen:
         separator = " "
         res = separator.join(text)
         print("output length %d" % len(text))
@@ -589,7 +589,7 @@ def generateAnswer(query, searcher, voc):
     input_sentence = normalizeString(input_sentence, lang)
     if lang == "cn":  # 如果是中文则进行分词
         input_sentence = list(jieba.cut(input_sentence))
-        if debug:
+        if debug_gen:
             print("input length %d" % len(input_sentence))
         input_sentence = " ".join(input_sentence)
     # Evaluate sentence
@@ -604,7 +604,7 @@ def generateAnswer(query, searcher, voc):
     return res
 
 
-def init():
+def initGenModel():
     with open(vocFile, 'rb') as f:
         voc = pickle.load(f)
     with open(pairsFile, 'rb') as f:

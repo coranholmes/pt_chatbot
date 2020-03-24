@@ -17,7 +17,7 @@ import warnings
 
 warnings.filterwarnings("ignore")
 
-encoder, decoder, voc, pairs, embedding = init()
+encoder, decoder, voc, pairs, embedding = initGenModel()
 
 if mode == "train":
     # Ensure dropout layers are in train mode
