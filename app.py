@@ -14,6 +14,7 @@ from __future__ import unicode_literals
 
 import pickle
 from model import *
+from utils import *
 import warnings
 from flask import Flask, render_template, request, make_response
 from flask import jsonify
@@ -51,7 +52,9 @@ app = Flask(__name__, static_url_path="/static")
 def reply():
     req_msg = request.form['msg']
     print('Message received:', req_msg)
-    res_msg = generateAnswer(req_msg, searcher, voc)
+    res_msg, sim = retrieveAnswer(req_msg, sent_emb)
+    if sim < threshold_ret:
+        res_msg = generateAnswer(req_msg, searcher, voc)
     print('Message sent:', res_msg)
     # 如果接受到的内容为空，则给出相应的回复
     if res_msg == '':
@@ -72,6 +75,8 @@ decoder.eval()
 
 # Initialize search module
 searcher = GreedySearchDecoder(encoder, decoder)
+
+sent_emb = pd.read_pickle(sentEmbFile)
 
 # 结巴分词准备
 init = "".join(list(jieba.cut("聊天系统初始化成功")))
