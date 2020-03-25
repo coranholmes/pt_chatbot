@@ -4,7 +4,7 @@
 @software: PyCharm
 @file: compute_sent_emb.py
 @time: 3/23/2020 11:10 PM
-@comments: 对知识库现有的query计算sentence embedding备用
+@comments: ①对知识库现有的query计算sentence embedding备用 ②创建AnnoyIndex备查 ③创建ball tree对象备查
 """
 
 
@@ -31,3 +31,32 @@ data.columns = ['qry', 'ans']
 #     stopWords = [line.strip() for line in f.readlines()]
 data['emb'] = data.apply(applyfn, axis=1)
 data.to_pickle('data/sent_emb.pkl')
+
+
+# annoyindex建立索引并保存
+from annoy import AnnoyIndex
+from sklearn.preprocessing import normalize
+
+sent_emb = data
+mat = []
+for _, row in sent_emb.iterrows():
+    mat.append(row.emb)
+mat = np.array(mat)
+mat = normalize(mat, norm='l2')
+[rows, cols] = mat.shape
+
+t = AnnoyIndex(cols, 'angular')  # Length of item vector that will be indexed
+for i in range(rows):
+    v = list(mat[i,:])
+    t.add_item(i, v)
+
+t.build(100)
+t.save(annoyIdxFile)
+
+
+# ball tree建立索引并保存
+from sklearn.neighbors import KDTree, BallTree
+
+bt = BallTree(mat, metric='euclidean')
+with open(ballTreeIdxFile, 'wb') as f:
+    pickle.dump(bt, f)

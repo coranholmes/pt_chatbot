@@ -45,7 +45,7 @@
 ## 检索模型
 1. 将`gensim`加载`fastText`词向量后得到的模型存储在路径`fastTextGensim`下。（具体见`compute_sent_emb.py`的注释部分）
 2. 运行`compute_sent_emb.py`计算知识库中所有句子的句向量保存`sentEmbFile`
-3. 运行`retrieval.py`，可与机器人对话，输入quit结束
+3. `config.py`中的`retrieve_mode`支持brute force, annoy index和ball tree三种方式，设置需要的检索模型后运行`retrieval.py`。其中brute force速度比较慢，但是准确性有保证，annoy速度最快，数据量级上去了也没问题，但是结果可能比brute force稍差，不过我目测了基本差不多。
 
 ## 混合模型
 混合模型综合了生成模型和检索模型的结果，当检索模型召回的answer与用户输入的query相似度小于阈值（由`config.py`中的`threshold_ret`定义）。前两个模型都跑通的话可以用如下方法运行混合模型：
@@ -69,8 +69,7 @@ bot的训练语料全是谈情说爱性质的，所以出现金融危机、covid
 # 未来工作
 1. 现在的生成模型似乎不会自动停止，总是倾向于生成长回答，所以做了后处理，即在句号或问号处截断生成的回答。这似乎是因为`maskNLLLoss`只计算实际句子长度的loss，之后也许会尝试一下计算完整长度的loss。  
 2. 部署上线（么得机器哈哈哈）。
-3. 增加调教功能以用于收集更多语料。
-4. 检索模型计算句子相似度有点慢，之后可能会用`Faiss`重写这部分代码。
+3. 增加调教功能以用于收集更多语料（因为暂时没法上线，这功能做了也没用啊，没人调教）。
 
 # 参考
 http://fancyerii.github.io/2019/02/14/chatbot/  
