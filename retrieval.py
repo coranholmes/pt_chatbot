@@ -30,9 +30,7 @@ else:
     sys.exit(0)
 
 while 1:
-    # Get input sentence
     input_sentence = input('> ')
-    # Check if it is quit case
     if input_sentence == 'q' or input_sentence == 'quit':
         break
     if retrieve_mode == "brute_force":

@@ -52,8 +52,8 @@ app = Flask(__name__, static_url_path="/static")
 def reply():
     req_msg = request.form['msg']
     print('Message received:', req_msg)
-    res_msg, sim = retrieveAnswer(req_msg, sent_emb)
-    if sim < threshold_ret:
+    res_msg, sim = retrieveAnswer_ann(req_msg, sent_emb, u)
+    if sim > threshold_ann:
         res_msg = generateAnswer(req_msg, searcher, voc)
     print('Message sent:', res_msg)
     # 如果接受到的内容为空，则给出相应的回复
@@ -80,6 +80,10 @@ sent_emb = pd.read_pickle(sentEmbFile)
 
 # 结巴分词准备
 init = "".join(list(jieba.cut("聊天系统初始化成功")))
+
+# 加载annoy index
+u = AnnoyIndex(hidden_size, 'angular')
+u.load(annoyIdxFile)
 
 # 启动APP
 app.run()
