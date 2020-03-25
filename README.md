@@ -1,8 +1,11 @@
 # Requirements
+ - python 3.7.4
  - PyTorch 1.2.0
- - Jieba 0.42.1
- - Flask 1.1.1（网页版本才需要）
- - Gensim 3.8.0 （检索模型才需要）
+ - jieba 0.42.1
+ - flask 1.1.1
+ - gensim 3.8.0 
+ - annoy 1.16.3 
+ - scikit-learn 0.21.3
 
 # 数据相关
 ## 训练语料
