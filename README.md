@@ -28,31 +28,36 @@
 
 # 运行方法
 ## 生成模型
+生成模型参考了pytorch的chatbot教程，主要是seq2seq模型+attention。
 ### 训练模型
 1. 运行`generate_voc_pairs.py`生成词汇表和问答pairs
-2. 运行`preprocess_emb.py`预处理预训练的词向量（如果不需要预训练词向量可跳过此步骤，`config.py`中）
+2. 运行`preprocess_emb.py`预处理预训练的词向量（如果不需要预训练词向量可跳过此步骤，`config.py`中设置`embeddingFile`为`None`即可）
 3. 在`config.py`文件中配置相关参数（参考`config_example.py`）
- - 设置`mode=train`
+ - 设置`mode="train"`
  - 首次训练设置`loadFilename=None`，如果是接着训练则设置`checkpoint_iter`为上次训练的次数，并设置`loadFilename`为存档地址
 4. 运行`train.py`训练模型，训练完后可与机器人对话，输入quit结束
 
 ### 测试模型
 1. 在`config.py`文件中配置相关参数
- - 设置`mode=evaluate`
+ - 设置`mode="evaluate"`
  - 设置`checkpoint_iter`为上次训练的次数，并设置`loadFilename`为存档地址
 2. 运行`train.py`训练模型，可与机器人对话，输入quit结束
 
 ## 检索模型
+检索模型主要就是将句子表示成向量后，搜索最近邻（KNN）。实现的三个不同的模型主要在速度和准确性上稍有区别。
 1. 将`gensim`加载`fastText`词向量后得到的模型存储在路径`fastTextGensim`下。（具体见`compute_sent_emb.py`的注释部分）
-2. 运行`compute_sent_emb.py`计算知识库中所有句子的句向量保存`sentEmbFile`
-3. `config.py`中的`retrieve_mode`支持brute force, annoy index和ball tree三种方式，设置需要的检索模型后运行`retrieval.py`。其中brute force速度比较慢，但是准确性有保证，annoy速度最快，数据量级上去了也没问题，但是结果可能比brute force稍差，不过我目测了基本差不多。
+2. 运行`compute_sent_emb.py`完成三个检索模型所需要的准备工作：
+ - 计算知识库中所有句子的句向量保存`sentEmbFile`
+ - 创建annoy index备查 
+ - 创建ball tree对象备查
+3. `config.py`中的`retrieve_mode`支持`brute_force`, `annoy`和`ball_tree`三种方式，设置需要的检索模型后运行`retrieval.py`。其中brute force速度比较慢，但是准确性有保证，annoy速度最快，数据量级上去了也没问题，但是结果可能比brute force稍差，不过我目测了基本差不多。
 
 ## 混合模型
-混合模型综合了生成模型和检索模型的结果，当检索模型召回的answer与用户输入的query相似度小于阈值（由`config.py`中的`threshold_ret`定义）。前两个模型都跑通的话可以用如下方法运行混合模型：
+混合模型综合了生成模型和检索模型的结果，当检索模型召回的answer与用户输入的query相似度不满足阈值条件则进一步调用生成模型返回结果。前两个模型都跑通的话可以用如下方法运行混合模型：
 1. 运行`hybrid_model.py`，可与机器人对话，输入quit结束
 
 ## 网页版本
-1. 网页版目前接的是生成模型+annoy检索，运行`app.py`，服务器启动后找到地址，如`http://127.0.0.1:5000/`
+1. 网页版目前接的是生成模型+annoy检索，运行`app.py`，服务器启动后会输出服务器地址，如`http://127.0.0.1:5000/`
 2. 在浏览器中输入地址，和机器人对话
 
 # 训练效果
