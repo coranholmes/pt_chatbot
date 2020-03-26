@@ -20,6 +20,7 @@ warnings.filterwarnings("ignore")
 encoder, decoder, voc, pairs, embedding = initGenModel()
 
 if mode == "train":
+    print("Training Mode starts ...")
     # Ensure dropout layers are in train mode
     encoder.train()
     decoder.train()
@@ -54,6 +55,7 @@ if mode == "train":
                embedding, encoder_n_layers, decoder_n_layers, save_dir, n_iteration, batch_size,
                print_every, save_every, clip, corpus_name, loadFilename)
 
+print("Evaluation Mode starts ...")
 # Set dropout layers to eval mode
 encoder.eval()
 decoder.eval()

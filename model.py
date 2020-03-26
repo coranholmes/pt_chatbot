@@ -363,6 +363,8 @@ class LuongAttnDecoderRNN(nn.Module):
 
 
 def maskNLLLoss(inp, target, mask):
+    if not masked:
+        mask = torch.ones_like(mask)
     # 计算实际的词的个数，因为padding是0，非padding是1，因此sum就可以得到词的个数
     nTotal = mask.sum()
     crossEntropy = -torch.log(torch.gather(inp, 1, target.view(-1, 1)).squeeze(1))
@@ -597,7 +599,10 @@ def generateAnswer(query, searcher, voc):
     # Format and print response sentence
     output_words[:] = [x for x in output_words if not (x == 'EOS' or x == 'PAD')]
     if lang == "cn":
-        res = postProcessOutput(output_words)
+        if masked:
+            res = postProcessOutput(output_words)
+        else:
+            res = "".join(output_words)
     else:
         separator = " "
         res = separator.join(output_words)
