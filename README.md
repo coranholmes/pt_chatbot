@@ -50,13 +50,13 @@
 
 ## 检索模型
 检索模型主要就是将句子表示成向量后，搜索最近邻（KNN）。实现的三个不同的模型主要在速度和准确性上稍有区别。
-1. 将`gensim`加载`fastText`词向量后得到的模型存储在路径`fastTextGensim`下。（具体见`compute_sent_emb.py`的注释部分）
-2. 运行`compute_sent_emb.py`完成检索模型所需要的准备工作：
- - 计算知识库中所有句子的句向量保存`sentEmbFile`
- - gensim载入fasttext词向量后，为了之后快速读取用存成pickle形式，路径为`fastTextGensim`，具体参考[这里](https://github.com/coranholmes/pt_chatbot/issues/2)
- - 创建annoy index备查 
- - 创建ball tree对象备查
-3. `config.py`中的`retrieve_mode`支持`brute_force`, `annoy`和`ball_tree`三种方式，设置需要的检索模型后运行`retrieval.py`。其中brute force速度比较慢，但是准确性有保证，annoy速度最快，数据量级上去了也没问题，但是结果可能比brute force稍差，不过我目测了基本差不多。
+1. 运行`compute_sent_emb.py`完成检索模型所需要的准备工作：  
+将`gensim`加载`fastText`词向量后得到的模型存储在路径`fastTextGensim`下，具体参考[这里](https://github.com/coranholmes/pt_chatbot/issues/2)  
+计算知识库中所有句子的句向量保存`sentEmbFile`  
+创建annoy index备查  
+创建ball tree对象备查  
+2. `config.py`中的`retrieve_mode`支持`brute_force`, `annoy`和`ball_tree`三种方式，设置需要的检索模型后运行`retrieval.py`。其中brute force速度比较慢，但是准确性有保证，annoy速度最快，数据量级上去了也没问题，但是结果可能比brute force稍差，不过我目测了基本差不多。
+3. 运行`retrieval.py`，可与机器人对话，输入quit结束
 
 ## 混合模型
 混合模型综合了生成模型和检索模型的结果，当检索模型召回的answer与用户输入的query相似度不满足阈值条件则进一步调用生成模型返回结果。前两个模型都跑通的话可以用如下方法运行混合模型：
