@@ -53,7 +53,7 @@
 1. 将`gensim`加载`fastText`词向量后得到的模型存储在路径`fastTextGensim`下。（具体见`compute_sent_emb.py`的注释部分）
 2. 运行`compute_sent_emb.py`完成检索模型所需要的准备工作：
  - 计算知识库中所有句子的句向量保存`sentEmbFile`
- - （另外文件开头注释掉的几行同时计算了`gensim_fasttext.mod`这个embedding操作所需的文件，如需要可以uncomment，具体参考[这里](https://github.com/coranholmes/pt_chatbot/issues/2)）
+ - gensim载入fasttext词向量后，为了之后快速读取用存成pickle形式，路径为`fastTextGensim`，具体参考[这里](https://github.com/coranholmes/pt_chatbot/issues/2)
  - 创建annoy index备查 
  - 创建ball tree对象备查
 3. `config.py`中的`retrieve_mode`支持`brute_force`, `annoy`和`ball_tree`三种方式，设置需要的检索模型后运行`retrieval.py`。其中brute force速度比较慢，但是准确性有保证，annoy速度最快，数据量级上去了也没问题，但是结果可能比brute force稍差，不过我目测了基本差不多。
